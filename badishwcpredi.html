@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>World Cup Prediction by BADISH</title>
+
+<style>
+body{
+background:#0f172a;
+color:white;
+font-family:Arial,sans-serif;
+max-width:1000px;
+margin:auto;
+padding:20px;
+}
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+margin-top:15px;
+}
+input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+}
+button{
+background:#22c55e;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+th,td{
+border:1px solid #334155;
+padding:10px;
+text-align:center;
+}
+h1,h2{
+text-align:center;
+}
+#adminPanel{
+display:none;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🏆 World Cup Prediction 2026 by itta potti💥</h1>
+
+
+<div class="card">
+<h2>User Login</h2>
+
+<input type="text" id="username" placeholder="Enter Username">
+
+<button onclick="login()">Login</button>
+
+<button onclick="logout()">Logout</button>
+
+<p id="userStatus"></p>
+</div>
+
+<div class="card">
+<h2>Predict World Cup Winner</h2>
+
+<input type="text" id="team"
+placeholder="Type Team Name">
+
+<button onclick="submitPrediction()">
+Submit Prediction
+</button>
+</div>
+
+<div class="card">
+<h2>Predictions</h2>
+
+<table>
+<tr>
+<th>User</th>
+<th>Prediction</th>
+</tr>
+<tbody id="predictionTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h2>Leaderboard</h2>
+
+<table>
+<tr>
+<th>User</th>
+<th>Points</th>
+</tr>
+<tbody id="leaderboard"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h2>Admin Login</h2>
+
+<input type="text" id="adminUser"
+placeholder="Admin Username">
+
+<input type="password" id="adminPass"
+placeholder="Admin Password">
+
+<button onclick="adminLogin()">
+Admin Login
+</button>
+</div>
+
+<div class="card" id="adminPanel">
+<h2>Admin Panel</h2>
+
+<input type="text" id="winnerUser"
+placeholder="Winner Username">
+
+<button onclick="givePoint()">
+Give 1 Point
+</button>
+
+<input type="text" id="dailyWinner"
+placeholder="Today's Winner">
+
+<button onclick="postWinner()">
+Post Daily Winner
+</button>
+
+<p id="winnerPost"></p>
+</div>
+
+<script>
+
+function login(){
+
+let user =
+document.getElementById("username").value;
+
+if(user==""){
+alert("Enter Username");
+return;
+}
+
+localStorage.setItem("user",user);
+
+document.getElementById("userStatus")
+.innerHTML =
+"Logged in as <b>"+user+"</b>";
+}
+
+function logout(){
+
+localStorage.removeItem("user");
+
+document.getElementById("userStatus")
+.innerHTML="Logged Out";
+
+}
+
+function submitPrediction(){
+
+let user =
+localStorage.getItem("user");
+
+if(!user){
+alert("Login First");
+return;
+}
+
+let team =
+document.getElementById("team").value;
+
+if(team==""){
+alert("Enter Team Name");
+return;
+}
+
+let predictions =
+JSON.parse(
+localStorage.getItem("predictions")
+|| "[]"
+);
+
+predictions.push({
+user:user,
+team:team
+});
+
+localStorage.setItem(
+"predictions",
+JSON.stringify(predictions)
+);
+
+loadPredictions();
+
+alert("Prediction Submitted");
+}
+
+function loadPredictions(){
+
+let predictions =
+JSON.parse(
+localStorage.getItem("predictions")
+|| "[]"
+);
+
+let html="";
+
+for(let i=0;i<predictions.length;i++){
+
+html +=
+"<tr><td>"
++predictions[i].user+
+"</td><td>"
++predictions[i].team+
+"</td></tr>";
+
+}
+
+document.getElementById(
+"predictionTable"
+).innerHTML = html;
+}
+
+function adminLogin(){
+
+let u =
+document.getElementById(
+"adminUser"
+).value;
+
+let p =
+document.getElementById(
+"adminPass"
+).value;
+
+if(
+u=="Badish477" &&
+p=="Badish477"
+){
+
+document.getElementById(
+"adminPanel"
+).style.display="block";
+
+alert("Admin Login Success");
+
+}else{
+
+alert("Wrong Login");
+
+}
+}
+
+function givePoint(){
+
+let user =
+document.getElementById(
+"winnerUser"
+).value;
+
+let points =
+JSON.parse(
+localStorage.getItem("points")
+|| "{}"
+);
+
+points[user] =
+(points[user] || 0) + 1;
+
+localStorage.setItem(
+"points",
+JSON.stringify(points)
+);
+
+loadLeaderboard();
+
+alert("Point Added");
+}
+
+function loadLeaderboard(){
+
+let points =
+JSON.parse(
+localStorage.getItem("points")
+|| "{}"
+);
+
+let html="";
+
+for(let user in points){
+
+html +=
+"<tr><td>"
++user+
+"</td><td>"
++points[user]+
+"</td></tr>";
+
+}
+
+document.getElementById(
+"leaderboard"
+).innerHTML = html;
+}
+
+function postWinner(){
+
+let winner =
+document.getElementById(
+"dailyWinner"
+).value;
+
+localStorage.setItem(
+"dailyWinner",
+winner
+);
+
+document.getElementById(
+"winnerPost"
+).innerHTML =
+"🏆 Daily Winner: "+winner;
+}
+
+document.getElementById(
+"winnerPost"
+).innerHTML =
+"🏆 Daily Winner: " +
+(localStorage.getItem(
+"dailyWinner"
+) || "Not Posted");
+
+loadPredictions();
+loadLeaderboard();
+</script>
+
+</body>
+</html>
